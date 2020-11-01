@@ -24,7 +24,14 @@ class modules_oauth_twitter {
         if ($evt->service !== 'twitter') {
             return;
         }
-        $res = $this->get(self::VERIFY_CREDENTIALS_URL);
+		$app = Dataface_Application::getInstance();
+		$config = @$app->_conf['oauth_twitter'];
+		$email = $config and @$config['include_email'];
+		$url = self::VERIFY_CREDENTIALS_URL;
+		if ($email) {
+			$url .= '&include_email=true';
+		}
+        $res = $this->get($url);
         if (df_http_response_code() < 200 or df_http_response_code() > 299) {
             throw new Exception("Failed to get user credentials.  Response code ". df_http_response_code());
         }
